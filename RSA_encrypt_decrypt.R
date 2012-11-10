@@ -80,7 +80,7 @@ encode <- function(ascii_sentence, e, n){
 
 decode <- function(encoded, d, n) {
   #decode using private key and factored d (to help it run)
-  #set i as the discovered facftor of d
+  #set i as the discovered factor of d
   f <<- getFactor(d)
   #set o to another factor of d that multipels i to get d
   o <<- d/f
@@ -103,7 +103,7 @@ rsa_full <- function(sentence){
   #print everything
   print(sentence)
   print(ascii_sentence)
-  print(encoded)
-  print(decoded)
+  print(as.character(encoded))
+  print(as.character(decoded))
   print(fully_decoded)
 }
