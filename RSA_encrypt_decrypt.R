@@ -101,9 +101,11 @@ rsa_full <- function(sentence){
   #decode using private key
   decode(encoded, d, n)
   #print everything
-  print(sentence)
-  print(ascii_sentence)
-  print(as.character(encoded))
-  print(as.character(decoded))
-  print(fully_decoded)
+  print(c("The original sentence: ", sentence))
+  print(c("The ASCII-encoded sentence: ", ascii_sentence))
+  print(c("The fully-encoded sentence: ", as.character(encoded)))
+  print(c("The ASCII-decoded sentence: ", as.character(decoded)))
+  print(c("The fully-decoded sentence: ", fully_decoded))
+  print(c("The public key: (", e, ", ", as.character(n), ")"))
+  print(c("The private key: (", d, ", ", as.character(n), ")"))
 }
