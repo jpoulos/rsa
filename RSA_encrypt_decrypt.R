@@ -1,17 +1,6 @@
+#call gmp library
 library("gmp")
-library("schoolmath")
-#Euler's totient function
-phi <- function(x){
-  counter <- 0
-  for (i in 1:(x-1)){
-    if (gcd.bigz(x,i)==1){
-      counter <- counter + 1
-    }
-  }
-  if (x==1){counter=1}
-  return(counter)
-}
-#sieve copied from stackoverflow: http://stackoverflow.com/questions/3789968/generate-a-list-of-primes-in-r-up-to-a-certain-number
+#sieve of eratosthenes copied from stackoverflow: http://stackoverflow.com/questions/3789968/generate-a-list-of-primes-in-r-up-to-a-certain-number
 sieve <- function(n)
 {
   n <- as.integer(n)
@@ -38,17 +27,7 @@ ascii_conversion <- function(x) {
 char_conversion <- function(n) {
   rawToChar(as.raw(n))
 }
-#sieve of eratosthenes (modified from Beckwith's Python code)
-# soe <- function(x){
-#   prime_numbers <- rep(TRUE, x)
-#   prime_numbers[1] <- FALSE
-#   final.prime <- as.integer(2)
-#   for (i in final.prime:ceiling(sqrt(x))){
-#     prime_numbers[seq.int(as.integer(2)*final.prime, x, final.prime)] <- FALSE
-#     final.prime <- final.prime + min(which(prime_numbers[(final.prime+1):x]))
-#   }
-#   which(prime_numbers)
-# }
+#get a normal-sized factor of d. if it cna't find one, it starts the whole process over
 getFactor <- function(x){
   if (isprime(d) == 0){
     for(i in 10000:100000){
@@ -60,7 +39,7 @@ getFactor <- function(x){
 }
 
 
-
+#function to generate all required values for the function
 generate_values <- function(sentence) {
   sentence <<- sentence
   ascii_sentence <<- ascii_conversion(sentence)
@@ -80,7 +59,7 @@ generate_values <- function(sentence) {
       break
     }  
   }
-  #find d such that de%%m==1
+  #find d such that de%%m==1. if d is prime, start over (because we need to factor it)
   for (x in 1:1000000){
     if ( (1+x*m)%%e == 0 && isprime((1+x*m)/e)==0 ){
       d <<- (1+x*m)/e
@@ -96,11 +75,7 @@ generate_values <- function(sentence) {
 
 #encode using public key
 encode <- function(ascii_sentence, e, n){
-  encoded <- character()
-  for (x in 1:length(ascii_sentence)){
-    encoded[x] <- as.character(as.bigz(ascii_sentence[x])^e %% n)
-  }
-  encoded <<- encoded
+  encoded <<- as.bigz(ascii_sentence)^e %% n
 }
 
 decode <- function(encoded, d, n) {
@@ -117,10 +92,13 @@ decode <- function(encoded, d, n) {
   fully_decoded <<- char_conversion(as.integer(decoded))
 }
 
-
+#create full function with only input being the message
 rsa_full <- function(sentence){
+  #generate all initial values needed
   generate_values(sentence)
+  #encode using public key
   encode(ascii_sentence, e, n)
+  #decode using private key
   decode(encoded, d, n)
   #print everything
   print(sentence)
@@ -129,5 +107,3 @@ rsa_full <- function(sentence){
   print(decoded)
   print(fully_decoded)
 }
-
-#testline
