@@ -50,11 +50,19 @@ char_conversion <- function(n) {
 #   which(prime_numbers)
 # }
 getFactor <- function(x){
-  for(i in 1000:1000000){
-    if(x%%i == 0)
-      return(i)
+  if (isprime(d) == 0){
+    for(i in 10000:100000){
+      if(x%%i == 0)
+        return(i)
+    }
+    for(i in 1000:floor(sqrt(d))){
+      if(x%%i == 0)
+        return(i)
+    }
   }
-  
+  if (isprime(d) != 0){
+    return(d)
+  }
 }
 
 sentence <- "Hi Jackson!"
@@ -98,8 +106,8 @@ for (x in 1:length(ascii_sentence)){
 #decode using private key and factoring d
 i <- getFactor(d)
 o <- d/i
-decoded <- pow.bigz(encoded,o) %% n
-decoded <- pow.bigz(decoded,i) %% n
+decoded <- pow.bigz(encoded,min(o,i)) %% n
+decoded <- pow.bigz(decoded,max(o,i)) %% n
 
 #fully decode into original characters
 fully_decoded <- char_conversion(as.integer(decoded))
