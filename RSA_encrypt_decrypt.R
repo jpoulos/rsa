@@ -49,13 +49,20 @@ char_conversion <- function(n) {
 #   }
 #   which(prime_numbers)
 # }
+getFactor <- function(x){
+  for(i in 1000:1000000){
+    if(x%%i == 0)
+      return(i)
+  }
+  
+}
 
 sentence <- "Hi Jackson!"
 
 ascii_sentence <- ascii_conversion(sentence)
 
 #randomly choose two primes under 1000000 and order them and place in p, q
-two_primes <- sort(sample(sieve(10000), 2, replace=FALSE))
+two_primes <- sort(sample(sieve(1000000), 2, replace=FALSE))
 p <- two_primes[1]
 q <- two_primes[2]
 #find their product and place in n
@@ -88,14 +95,14 @@ for (x in 1:length(ascii_sentence)){
   encoded[x] <- as.character(as.bigz(ascii_sentence[x])^e %% n)
 }
 
-#decode using private key
-decoded <- character()
-for (y in 1:length(encoded)){
-  decoded[y] <- as.integer(pow.bigz(encoded[y],d) %% n)
-}
+#decode using private key and factoring d
+i <- getFactor(d)
+o <- d/i
+decoded <- pow.bigz(encoded,o) %% n
+decoded <- pow.bigz(decoded,i) %% n
 
 #fully decode into original characters
-fully_decoded <- char_conversion(decoded)
+fully_decoded <- char_conversion(as.integer(decoded))
 
 #print everything
 print(sentence)
