@@ -55,7 +55,7 @@ getFactor <- function(x){
       if(x%%i == 0)
         return(i)
     }
-    
+    rsa_full(sentence)
   }
 }
 
