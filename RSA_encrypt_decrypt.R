@@ -55,66 +55,75 @@ getFactor <- function(x){
       if(x%%i == 0)
         return(i)
     }
-    for(i in 1000:floor(sqrt(d))){
-      if(x%%i == 0)
-        return(i)
+    
+  }
+}
+
+
+
+generate_values <- function(sentence) {
+  sentence <- sentence
+  ascii_sentence <<- ascii_conversion(sentence)
+  #randomly choose two primes under 1000000 and order them and place in p, q
+  two_primes <- sort(sample(sieve(1000000), 2, replace=FALSE))
+  p <<- two_primes[1]
+  k <<- two_primes[2]
+  #find their product and place in n
+  n <<- as.bigz(p)*as.bigz(k)
+  #totient of a number whose only factors are two primes a,b is (a-1)(b-1)
+  #find totient of primes_product and place in m
+  m <<- (p-1)*(k-1)
+  #finding e|e is coprime to m
+  for (i in 2:1000000){
+    if (gcd.bigz(m, i) == 1){
+      e <<- i
+      break
+    }  
+  }
+  #find d such that de%%m==1
+  for (x in 1:1000000){
+    if ( (1+x*m)%%e == 0 && isprime((1+x*m)/e)==0 ){
+      d <<- (1+x*m)/e
+      break
     }
-  }
-  if (isprime(d) != 0){
-    return(d)
-  }
-}
-
-sentence <- "Hi Jackson!"
-
-ascii_sentence <- ascii_conversion(sentence)
-
-#randomly choose two primes under 1000000 and order them and place in p, q
-two_primes <- sort(sample(sieve(1000000), 2, replace=FALSE))
-p <- two_primes[1]
-q <- two_primes[2]
-#find their product and place in n
-n <- as.bigz(p)*as.bigz(q)
-#totient of a number whose only factors are two primes a,b is (a-1)(b-1)
-#find totient of primes_product and place in m
-m <- (p-1)*(q-1)
-
-#finding e|e is coprime to m
-for (i in 2:1000000){
-  if (gcd.bigz(m, i) == 1){
-    e <- i
-    break
-  }  
-}
-
-#find d such that de%%m==1
-for (x in 1:1000000){
-  if ( (1+x*m)%%e == 0  ){
-    d <- (1+x*m)/e
-    break
   }
 }
 
 #now: public key is (e, n), private key is (d, n) 
 
 #encode using public key
-encoded <- character()
-for (x in 1:length(ascii_sentence)){
-  encoded[x] <- as.character(as.bigz(ascii_sentence[x])^e %% n)
+encode <- function(ascii_sentence, e, n){
+  encoded <- character()
+  for (x in 1:length(ascii_sentence)){
+    encoded[x] <- as.character(as.bigz(ascii_sentence[x])^e %% n)
+  }
+  encoded <<- encoded
 }
 
-#decode using private key and factoring d
-i <- getFactor(d)
-o <- d/i
-decoded <- pow.bigz(encoded,min(o,i)) %% n
-decoded <- pow.bigz(decoded,max(o,i)) %% n
+decode <- function(encoded, d, n) {
+  #decode using private key and factored d (to help it run)
+  #set i as the discovered facftor of d
+  i <- getFactor(d)
+  #set o to another factor of d that multipels i to get d
+  o <- d/i
+  #use modulus exponentiation to read decoded string
+  decoded <- pow.bigz(encoded,min(o,i)) %% n
+  decoded <- pow.bigz(decoded,max(o,i)) %% n
+  decoded <<- decoded
+  #fully decode into original characters
+  fully_decoded <<- char_conversion(as.integer(decoded))
+}
 
-#fully decode into original characters
-fully_decoded <- char_conversion(as.integer(decoded))
 
-#print everything
-print(sentence)
-print(ascii_sentence)
-print(encoded)
-print(decoded)
-print(fully_decoded)
+rsa_full <- function(sentence){
+  generate_values(sentence)
+  encode(ascii_sentence, e, n)
+  decode(encoded, d, n)
+  #print everything
+  print(sentence)
+  print(ascii_sentence)
+  print(encoded)
+  print(decoded)
+  print(fully_decoded)
+}
+
