@@ -62,7 +62,7 @@ getFactor <- function(x){
 
 
 generate_values <- function(sentence) {
-  sentence <- sentence
+  sentence <<- sentence
   ascii_sentence <<- ascii_conversion(sentence)
   #randomly choose two primes under 1000000 and order them and place in p, q
   two_primes <- sort(sample(sieve(1000000), 2, replace=FALSE))
@@ -84,6 +84,9 @@ generate_values <- function(sentence) {
   for (x in 1:1000000){
     if ( (1+x*m)%%e == 0 && isprime((1+x*m)/e)==0 ){
       d <<- (1+x*m)/e
+      if (isprime(d) != 0){
+        rsa_full(sentence)
+      }
       break
     }
   }
@@ -103,12 +106,12 @@ encode <- function(ascii_sentence, e, n){
 decode <- function(encoded, d, n) {
   #decode using private key and factored d (to help it run)
   #set i as the discovered facftor of d
-  i <- getFactor(d)
+  f <<- getFactor(d)
   #set o to another factor of d that multipels i to get d
-  o <- d/i
+  o <<- d/f
   #use modulus exponentiation to read decoded string
-  decoded <- pow.bigz(encoded,min(o,i)) %% n
-  decoded <- pow.bigz(decoded,max(o,i)) %% n
+  decoded <- pow.bigz(encoded,min(o,f)) %% n
+  decoded <- pow.bigz(decoded,max(o,f)) %% n
   decoded <<- decoded
   #fully decode into original characters
   fully_decoded <<- char_conversion(as.integer(decoded))
